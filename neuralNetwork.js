@@ -91,12 +91,33 @@ class Matrix {
         } else {
             console.log("Wrong dimensions!");
         }
+    }
 
+    //Matrix Scalar Product
+    static matrixScalarProduct(matrix1, matrix2) {
+        var result = 0;
+        if(matrix1.length == matrix2.length) {
+
+            for(var i = 0; i < matrix1.length; i++){
+                result += this.vectorScalarProduct(matrix1[i], matrix2[i]);
+            }
+            return result;
+
+        } else {
+            console.log("Wrong dimensions!");
+        }
     }
 
     //Norm
     static vectorNorm(vector) {
         var scalar_product = Matrix.vectorScalarProduct(vector, vector);
+        var result = Math.sqrt(scalar_product);
+        return result;
+    }
+
+    //Matrix "Norm"
+    static matrixNorm(matrix) {
+        var scalar_product = Matrix.matrixScalarProduct(matrix, matrix);
         var result = Math.sqrt(scalar_product);
         return result;
     }
@@ -218,11 +239,11 @@ class NeuralNetwork {
     setRandom(){
         
         for(var i = 0; i < this.weightsMatrixes.length; i++) {
-            Matrix.randomiseMatrix(this.weightsMatrixes[i], 3);
+            Matrix.randomiseMatrix(this.weightsMatrixes[i], 30);
         }
 
         for(var i = 0; i < this.biasVectors.length; i++ ){
-            Matrix.randomiseVector(this.biasVectors[i], 3);
+            Matrix.randomiseVector(this.biasVectors[i], 30);
         }
     }
 
@@ -261,11 +282,13 @@ class NeuralNetwork {
         return trainingdata;
     }
 
-    train(trainingData, max_error, stepSize, minimumRate, max_stuck) {
+    train(trainingData, max_error, stepSize, minimumRate, max_stuck, max_iterations) {
 
         var error_now = this.getGeneralError(trainingData);
         var error_before = error_now;
         var trainingTensor = this.generateRandomTrainingTensor(stepSize);
+
+        var stuckPositions = [];
 
         var iterations = 0;      //Number of Total Training Iterations
         var stuck = 0;           //Gives number of iterations without progress
@@ -273,13 +296,12 @@ class NeuralNetwork {
 
         console.log("Starting at: Error = " + error_now);
 
-        while(error_now >= max_error) { 
-        //while(iterations < 1000){
+        while(error_now >= max_error && iterations <= max_iterations) { 
             this.applyTrainingTensor(trainingTensor);
             error_now = this.getGeneralError(trainingdata);
 
 
-            if(error_now - error_before < -minimumRate * (error_now - max_error) * stepSize * 10){ //Progressing as long as rate is above minimum
+            if(error_now - error_before < -minimumRate * (error_now - max_error) * stepSize * 10) { //Progressing as long as rate is above minimum
                 stuck = 0;
             } else {
                 this.undoTrainingTensor(trainingTensor); //monoton Fallend (minimumRate)
@@ -292,11 +314,25 @@ class NeuralNetwork {
             iterations++;
 
             Plot.addPoint("Error", [iterations, error_now]);
-            Plot.addPoint("Stuck", [iterations, stuck]);
+
+            // for(var i = 0; i < stuckPositions.length; i++) {
+            //     Plot.addPoint("Distance to Stuck",[iterations, this.getCurrentDistanceToConfiguration(stuckPositions[0])]);
+            // }
 
             if(stuck >= max_stuck) { //jumping somewhere else in case of local minima above max_error
-                
+
+               
+                var obj = {};
+                obj["weightsMatrixes"] = Array.from(this.weightsMatrixes);
+                obj["biasVectors"] =  Array.from(this.biasVectors);
+                stuckPositions.push(obj);
+
+                console.log(this.getCurrentConfiguration());
+
                 this.setRandom();
+
+                console.log(this.getCurrentConfiguration());
+
                 error_now = this.getGeneralError(trainingdata);
                 error_before = error_now;
 
@@ -311,6 +347,29 @@ class NeuralNetwork {
             "final_error": error_now,
             "nOfStucks": nOfStucks
         };
+    }
+
+    getCurrentDistanceToConfiguration(configuration) {
+
+        var distance = 0;
+
+        for(var i = 0; i < this.weightsMatrixes.length; i++) {
+            var differenceMatrix = Matrix.matrixSubstract(this.weightsMatrixes[i], configuration.weightsMatrixes[i]);
+            distance += Matrix.matrixNorm(differenceMatrix);
+        }
+
+        for(var i = 0; i < this.biasVectors.length; i++) {
+            var differenceVector = Matrix.vectorSubstract(this.biasVectors[i], configuration.biasVectors[i]);
+            distance += Matrix.vectorNorm(differenceVector);
+        }
+
+        return distance;
+    }
+
+    getCurrentConfiguration()
+    {
+        return {"weightsMatrixes": this.weightsMatrixes,
+                    "biasVectors": this.biasVectors};
     }
 
      //Returns the General Error over a Set of TrainingData
