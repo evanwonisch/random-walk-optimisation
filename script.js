@@ -2,7 +2,7 @@ Plot.addPlot("Error",-1000,0,2000,500,"iterations","error");
 Plot.addPlot("Stuck",-1000,550,2000,500,"iterations","stuck");
 Plot.addPlot("Result",1200,0,600,600,"x","y");
 
-var max_error = 0.07;
+var max_error = 0.1;
 var stepSize = 0.3;
 var max_stuck = 30;
 var minimumRate = 0.001;
