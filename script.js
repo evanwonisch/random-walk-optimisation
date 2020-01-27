@@ -19,6 +19,8 @@ network = new NeuralNetwork([2,3,3,1]);
 // network.weightsMatrixes = data.weightsMatrixes;
 // network.biasVectors = data.biasVectors;
 
+//Test
+
 var trainingdata = [];
 
 for(var i = 0; i < 4000; i++){
