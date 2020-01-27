@@ -1,14 +1,15 @@
 Plot.addPlot("Error",-1000,0,2000,500,"iterations","error");
-Plot.addPlot("Distance to Stuck",-1000,550,2000,500,"iterations","d(stuck[0])");
+Plot.addPlot("Distance to Stuck",-1000,550,2000,500,"iterations","d(stuck)");
 Plot.addPlot("Result",1200,0,600,600,"x","y");
 
-var max_error = 0.001;
+var max_error = 0.1;
 var stepSize = 0.3;
-var max_stuck = 30;
-var minimumRate = 0.000000000001;
-var max_iterations = 1000;
+var max_stuck = 50;
+var minimumRate = 0.00001;
+var max_iterations = 20000;
+var min_distance_to_Minima = 10;
 
-network = new NeuralNetwork([2,5,3,1]);
+network = new NeuralNetwork([2,3,3,1]);
 
 // var xhttp = new XMLHttpRequest();
 // xhttp.open("GET", "data.json", false);
@@ -36,15 +37,14 @@ for(var i = 0; i < 4000; i++){
 }
 
 
-var result = network.train(trainingdata, max_error, stepSize, minimumRate, max_stuck, max_iterations);
+var result = network.train(trainingdata, max_error, stepSize, minimumRate, max_stuck, max_iterations, min_distance_to_Minima);
 
-// var result = {};
-// result.iterations = 500;
 
 Plot.addLine("Error", "x", max_error);
+Plot.addLine("Distance to Stuck","x",min_distance_to_Minima);
 
 Plot.drawPlot("Error", 1000 / result.iterations, 200);
-Plot.drawPlot("Distance to Stuck", 1000 / result.iterations, 1/10);
+Plot.drawPlot("Distance to Stuck", 1000 / result.iterations, 1/2);
 
 
 for(var i = -100; i < 100; i++){

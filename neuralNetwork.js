@@ -186,6 +186,29 @@ class Matrix {
             }
         }
     }
+
+    //Copying Matrix
+    static copyMatrix(matrix)
+    {
+        var result = [];
+        for(var i = 0; i < matrix.length; i++) {
+            result[i] = [];
+            for(var j = 0; j < matrix[0].length; j++){
+                result[i][j] = matrix[i][j];
+            }
+        }
+        return result;
+    }
+
+    //Copying Vector
+    static copyVector(vector)
+    {
+        var result = [];
+        for(var i = 0; i < vector.length; i++) {
+            result[i] = vector[i];
+        }
+        return result;
+    }
 }
 
 //dimensioms = [2,3,4,5,1];
@@ -239,11 +262,11 @@ class NeuralNetwork {
     setRandom(){
         
         for(var i = 0; i < this.weightsMatrixes.length; i++) {
-            Matrix.randomiseMatrix(this.weightsMatrixes[i], 30);
+            Matrix.randomiseMatrix(this.weightsMatrixes[i], 10);
         }
 
         for(var i = 0; i < this.biasVectors.length; i++ ){
-            Matrix.randomiseVector(this.biasVectors[i], 30);
+            Matrix.randomiseVector(this.biasVectors[i], 10);
         }
     }
 
@@ -282,7 +305,7 @@ class NeuralNetwork {
         return trainingdata;
     }
 
-    train(trainingData, max_error, stepSize, minimumRate, max_stuck, max_iterations) {
+    train(trainingData, max_error, stepSize, minimumRate, max_stuck, max_iterations, min_distance_to_Minima) {
 
         var error_now = this.getGeneralError(trainingData);
         var error_before = error_now;
@@ -315,23 +338,33 @@ class NeuralNetwork {
 
             Plot.addPoint("Error", [iterations, error_now]);
 
-            // for(var i = 0; i < stuckPositions.length; i++) {
-            //     Plot.addPoint("Distance to Stuck",[iterations, this.getCurrentDistanceToConfiguration(stuckPositions[0])]);
-            // }
 
-            if(stuck >= max_stuck) { //jumping somewhere else in case of local minima above max_error
+            //Avoiding known local Minima
+            for(var i = 0; i < stuckPositions.length; i++) {
+                var distance = this.getCurrentDistanceToConfiguration(stuckPositions[i]);
+                Plot.addPoint("Distance to Stuck",[iterations, this.getCurrentDistanceToConfiguration(stuckPositions[i])]);
 
-               
-                var obj = {};
-                obj["weightsMatrixes"] = Array.from(this.weightsMatrixes);
-                obj["biasVectors"] =  Array.from(this.biasVectors);
-                stuckPositions.push(obj);
+                if(distance < min_distance_to_Minima){
+                    console.log("Avoided second encounter with local Minima");
 
-                console.log(this.getCurrentConfiguration());
+                    this.setRandom();
+
+                    error_now = this.getGeneralError(trainingdata);
+                    error_before = error_now;
+    
+                    nOfStucks++;
+                    stuck = 0;
+
+                }
+            }
+
+
+            //jumping somewhere else in case of local minima above max_error
+            if(stuck >= max_stuck) { 
+
+                stuckPositions.push(this.getCurrentConfiguration());
 
                 this.setRandom();
-
-                console.log(this.getCurrentConfiguration());
 
                 error_now = this.getGeneralError(trainingdata);
                 error_before = error_now;
@@ -359,17 +392,28 @@ class NeuralNetwork {
         }
 
         for(var i = 0; i < this.biasVectors.length; i++) {
-            var differenceVector = Matrix.vectorSubstract(this.biasVectors[i], configuration.biasVectors[i]);
+            var differenceVector = Matrix.vectorSubstract(Array.from(this.biasVectors[i]), configuration.biasVectors[i]);
             distance += Matrix.vectorNorm(differenceVector);
         }
 
         return distance;
     }
 
-    getCurrentConfiguration()
-    {
-        return {"weightsMatrixes": this.weightsMatrixes,
-                    "biasVectors": this.biasVectors};
+    getCurrentConfiguration(){
+        var obj = {};
+        obj["weightsMatrixes"] = [];
+        obj["biasVectors"] =  [];
+
+
+        for(var i = 0; i < this.weightsMatrixes.length; i++){
+            obj.weightsMatrixes[i] = Matrix.copyMatrix(this.weightsMatrixes[i]);
+        }
+
+        for(var i = 0; i < this.biasVectors.length; i++){
+            obj.biasVectors[i] = Matrix.copyVector(this.biasVectors[i]);
+        }
+
+        return obj;
     }
 
      //Returns the General Error over a Set of TrainingData
