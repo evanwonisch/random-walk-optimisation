@@ -8,19 +8,6 @@ var iterations = 0;
 var step_size = 0.05;
 var training_tensor = network.generateRandomTrainingTensor(step_size);
 var trainingdata = [];
-// for(var i = 0; i < 4000; i++){
-//     var x = Math.random() * 10 - 5;
-//     var y = Math.random() * 10 - 5;
-
-//     trainingdata[i] = {};
-//     trainingdata[i].data = [x, y];
-
-//     if( 2.5*(x*x*x) + x*x*x*x >= y){
-//         trainingdata[i].target = [0];
-//     } else {
-//         trainingdata[i].target = [1];
-//     }
-// }
 
 for(var i = 0; i < 4000; i++){
     var x = Math.random() * 10 - 5;
@@ -29,7 +16,13 @@ for(var i = 0; i < 4000; i++){
     trainingdata[i] = {};
     trainingdata[i].data = [x, y, x*x, y*y, Math.sin(x), Math.sin(y)];
 
-    if(x*y*10>=5-y*y){
+    // if(x*y*10>=5-y*y){
+    //     trainingdata[i].target = [1];
+    // }else {
+    //     trainingdata[i].target = [0];
+    // }
+
+     if(x*y*10>=5*y*y){
         trainingdata[i].target = [1];
     }else {
         trainingdata[i].target = [0];
