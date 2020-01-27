@@ -22,7 +22,7 @@ for(var i = 0; i < 4000; i++){
     //     trainingdata[i].target = [0];
     // }
 
-     if(x*y*10>=5*y*y){
+     if(x*x*10>=5+y*y){
         trainingdata[i].target = [1];
     }else {
         trainingdata[i].target = [0];
