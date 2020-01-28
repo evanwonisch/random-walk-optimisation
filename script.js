@@ -3,31 +3,38 @@ var ctx = canvas.getContext("2d");
 var height = canvas.height = window.innerHeight;
 var width = canvas.width = window.innerWidth;
 
-network = new NeuralNetwork([6,4,3,1]);
+network = new NeuralNetwork([6,5,5,1]);
 var iterations = 0;
 var step_size = 0.05;
 var training_tensor = network.generateRandomTrainingTensor(step_size);
 var trainingdata = [];
 
-for(var i = 0; i < 4000; i++){
-    var x = Math.random() * 10 - 5;
-    var y = Math.random() * 10 - 5;
 
-    trainingdata[i] = {};
-    trainingdata[i].data = [x, y, x*x, y*y, Math.sin(x), Math.sin(y)];
 
-    // if(x*y*10>=5-y*y){
-    //     trainingdata[i].target = [1];
-    // }else {
-    //     trainingdata[i].target = [0];
-    // }
+function generateTrainingData(){
 
-     if(x*x*3>y*y+1){
-        trainingdata[i].target = [1];
-    }else {
-        trainingdata[i].target = [0];
+    var x1  = Math.random()*5;
+    var x2  = Math.random()*7-2;
+    var x3  = Math.random()*10-5;
+    var x4  = Math.random()*10-5;
+    var x5  = Math.random()*10-5;
+
+    for(var i = 0; i < 4000; i++){
+        var x = Math.random() * 10 - 5;
+        var y = Math.random() * 10 - 5;
+    
+        trainingdata[i] = {};
+        trainingdata[i].data = [x, y, x*x, y*y, Math.sin(x), Math.sin(y)];
+    
+        if(x*x*x1-x2 +x5*x*x >= y*y +x*y*x3+y*x4){
+            trainingdata[i].target = [1];
+        }else {
+            trainingdata[i].target = [0];
+        }
     }
 }
+
+generateTrainingData();
 
 setInterval(update, 1);
 var keys = {};
@@ -43,6 +50,10 @@ function update()
 
     if(keys.Space) {
         network.applyTrainingTensor(network.generateRandomTrainingTensor(1));
+    }
+    
+    if(keys.KeyN) {
+        generateTrainingData();
     }
 
     advance();
@@ -76,8 +87,6 @@ function display() {
 
     for(var i = -50; i < 50; i++){
         for(var j = -50; j < 50;j++){
-
-
             ctx.fillStyle = toColour(network.calculate([i/10,j/10,(i*i/100),(j*j/100),Math.sin(i/100),Math.sin(j/100)]));
             ctx.fillRect(i*5+350,-j*5+350,4,4);
         }
@@ -101,7 +110,7 @@ function display() {
     ctx.fillText("Error: " + error_now, 100,50);
     ctx.fillText("Iterations: " + iterations, 700,50);
     ctx.font = "16px Georgia";
-    ctx.fillText("Space - Jump, R - randomise",100,700);
+    ctx.fillText("Space - Jump, R - randomise Network, N - new Data set",100,700);
 }
 
 function toColour(value){
