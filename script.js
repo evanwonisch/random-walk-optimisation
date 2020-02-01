@@ -4,6 +4,8 @@ var height = canvas.height = window.innerHeight;
 var width = canvas.width = window.innerWidth;
 
 network = new NeuralNetwork([6,5,5,1]);
+console.log("Created Network\nParameter Space Dimensionality: " + network.getDimensionality());
+
 var iterations = 0;
 var step_size = 0.05;
 var training_tensor = network.generateRandomTrainingTensor(step_size);

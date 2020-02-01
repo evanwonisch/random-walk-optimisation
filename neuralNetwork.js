@@ -279,6 +279,20 @@ class NeuralNetwork {
         return result;
     }
 
+    getDimensionality(){
+        var nOfBias = 0 ;
+        for(var i = 1; i < this.dimensions.length; i++) {
+            nOfBias += this.dimensions[i];
+        }
+
+        var nOfWeights = 0;
+
+        for(var i = 0; i < this.weightsMatrixes.length; i++){
+            nOfWeights += this.weightsMatrixes[i].length * this.weightsMatrixes[i][0].length;
+        }
+        return nOfBias + nOfWeights;
+    }
+
     //Generates Random Trainingdata Object Array
     // trainingdata = [{data: [], target: []}, ...];
     generateRandomTrainingData(amount) {
