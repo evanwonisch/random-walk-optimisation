@@ -3,7 +3,7 @@ var ctx = canvas.getContext("2d");
 var height = canvas.height = window.innerHeight;
 var width = canvas.width = window.innerWidth;
 
-network = new NeuralNetwork([6,50,50,1]);
+network = new NeuralNetwork([6,10,10,1]);
 console.log("Created Network\nParameter Space Dimensionality: " + network.getDimensionality());
 
 var iterations = 0;
