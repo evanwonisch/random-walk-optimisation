@@ -3,10 +3,11 @@ var ctx = canvas.getContext("2d");
 var height = canvas.height = window.innerHeight;
 var width = canvas.width = window.innerWidth;
 
-network = new NeuralNetwork([6,5,5,1]);
+network = new NeuralNetwork([6,50,50,1]);
 console.log("Created Network\nParameter Space Dimensionality: " + network.getDimensionality());
 
 var iterations = 0;
+var deltaError = 0;
 var step_size = 0.05;
 var training_tensor = network.generateRandomTrainingTensor(step_size);
 var trainingdata = [];
@@ -48,14 +49,20 @@ function update()
     if(keys.KeyR) {
         network.setRandom();
         iterations = 0;
+        console.log("Network randomised");
     }
 
     if(keys.Space) {
         network.applyTrainingTensor(network.generateRandomTrainingTensor(1));
+        console.log("Jumped");
     }
     
     if(keys.KeyN) {
         generateTrainingData();
+        console.log("New Dataset");
+        network.setRandom();
+        iterations = 0;
+        console.log("Network randomised");
     }
 
     advance();
@@ -71,6 +78,8 @@ function advance(){
     network.applyTrainingTensor(training_tensor);
     error_now = network.getGeneralError(trainingdata);
 
+    deltaError = error_now - error_before;
+
     if(error_now <= error_before){
 
     } else {
@@ -79,7 +88,6 @@ function advance(){
         error_now = network.getGeneralError(trainingdata);
         error_before = error_now;
     }
-
     error_before = error_now;
 }
 
@@ -113,6 +121,7 @@ function display() {
     ctx.fillText("Iterations: " + iterations, 700,50);
     ctx.font = "16px Georgia";
     ctx.fillText("Space - Jump, R - randomise Network, N - new Data set",100,700);
+    ctx.fillText("ΔError: "+Math.round(deltaError*10000000000)/10000000000+"/step",700, 700);
 }
 
 function toColour(value){
