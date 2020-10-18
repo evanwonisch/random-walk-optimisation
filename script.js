@@ -3,7 +3,7 @@ var ctx = canvas.getContext("2d");
 var height = canvas.height = window.innerHeight;
 var width = canvas.width = window.innerWidth;
 
-network = new NeuralNetwork([6,10,10,1]);
+network = new NeuralNetwork([2,10,1]);
 console.log("Created Network\nParameter Space Dimensionality: " + network.getDimensionality());
 
 var iterations = 0;
@@ -22,12 +22,12 @@ function generateTrainingData(){
     var x4  = Math.random()*10-5;
     var x5  = Math.random()*10-5;
 
-    for(var i = 0; i < 4000; i++){
+    for(var i = 0; i < 2000; i++){
         var x = Math.random() * 10 - 5;
         var y = Math.random() * 10 - 5;
     
         trainingdata[i] = {};
-        trainingdata[i].data = [x, y, x*x, y*y, Math.sin(x), Math.sin(y)];
+        trainingdata[i].data = [x, y/*, x*x, y*y, Math.sin(x), Math.sin(y)*/];
     
         if(x*x*x1-x2 +x5*x*x >= y*y +x*y*x3+y*x4){
             trainingdata[i].target = [1];
@@ -97,7 +97,7 @@ function display() {
 
     for(var i = -50; i < 50; i++){
         for(var j = -50; j < 50;j++){
-            ctx.fillStyle = toColour(network.calculate([i/10,j/10,(i*i/100),(j*j/100),Math.sin(i/100),Math.sin(j/100)]));
+            ctx.fillStyle = toColour(network.calculate([i/10,j/10/*,(i*i/100),(j*j/100),Math.sin(i/100),Math.sin(j/100)*/]));
             ctx.fillRect(i*5+350,-j*5+350,4,4);
         }
     }
