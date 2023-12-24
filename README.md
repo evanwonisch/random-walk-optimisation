@@ -1,4 +1,4 @@
-# Parabola
+# Random Walk Optimisation
  
 This simple Neural Network tries to discriminate points in a plane.
 
