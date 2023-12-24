@@ -12,7 +12,7 @@ A Gradient-free "Optimization" method is used:
 3. If the Error goes up again it starts at step 1
 
 # Results
-Watch Live training and Results here https://evanwonisch.github.io/Parabola/
+Watch Live training and Results here https://evanwonisch.github.io/random-walk-optimisation/
 
 # Documentation
 The documentation is beeing worked on.
